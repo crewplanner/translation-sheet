@@ -48,7 +48,7 @@ class Writer
             ->groupTranslationsByFile()
             ->map(function ($items, $sourceFile) {
                 $this->writeFile(
-                    $this->app->make('path.lang').'/'.$sourceFile,
+                    $sourceFile,
                     $items
                 );
             });

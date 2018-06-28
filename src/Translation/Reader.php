@@ -71,6 +71,18 @@ class Reader
         // App directory
         $this->scanDirectory($this->app->make('path.lang'));
 
+        foreach ($this->files->directories(base_path('Modules')) as $module) {
+            $module = basename($module);
+
+            if (!file_exists($directory = base_path('Modules/' . $module . '/resources/lang'))) {
+                continue;
+            }
+
+            foreach ($this->files->directories($directory) as $directory) {
+                $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), strtolower($module));
+            }
+        }
+
         return $this->translations;
     }
 
@@ -194,7 +206,7 @@ class Reader
      */
     private function toRelative($path)
     {
-        $relative = str_replace($this->app->make('path.lang').DIRECTORY_SEPARATOR, '', $path);
+        $relative = str_replace(base_path().DIRECTORY_SEPARATOR, '', $path);
         $relative = str_replace('\\', '/', $relative);
 
         return $relative;
