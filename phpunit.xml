@@ -8,10 +8,14 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-         stopOnFailure="true">
+         stopOnFailure="true"
+         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer">
     <testsuites>
-        <testsuite name="Laravel Translation Sheet Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
     <filter>
@@ -22,17 +26,15 @@
     <logging>
         <log type="tap" target="build/report.tap"/>
         <log type="junit" target="build/report.junit.xml"/>
-        <log type="coverage-html" target="build/coverage" charset="UTF-8" yui="true" highlight="true"/>
+        <log type="coverage-html" target="build/coverage"/>
         <log type="coverage-text" target="build/coverage.txt"/>
         <log type="coverage-clover" target="build/logs/clover.xml"/>
     </logging>
     <php>
         <env name="APP_KEY" value="3fifSECXIvnK5r28GVIWUAxmbBSjAjkO"/>
-
-        <env name="TS_SPREADSHEET_ID" value=""/>
+        <env name="TS_SPREADSHEET_ID" value="1NZoyjVIGw4G1g7xgHs2TheIpXbNGs3udSgKBp0kL--Y"/>
         <env name="TS_SERVICE_ACCOUNT_CREDENTIALS_FILE" value="tests/fixtures/service-account.json"/>
-        <env name="TS_SERVICE_ACCOUNT_EMAIL" value=""/>
+        <env name="TS_SERVICE_ACCOUNT_EMAIL" value="translation-system@translation-sheet-tests.iam.gserviceaccount.com"/>
         <env name="TS_LOCALES" value="en,fr"/>
-
     </php>
 </phpunit>

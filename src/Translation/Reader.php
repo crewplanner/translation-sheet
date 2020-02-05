@@ -2,9 +2,10 @@
 
 namespace Nikaia\TranslationSheet\Translation;
 
-use Illuminate\Support\Collection;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 
 class Reader
 {
@@ -95,10 +96,11 @@ class Reader
     {
         foreach ($this->files->directories($path) as $directory) {
             if ($this->isVendorDirectory($directory)) {
-                return $this->scanVendorDirectory($directory);
+                $this->scanVendorDirectory($directory);
             }
-
-            $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), null);
+            else {
+                $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), null);
+            }
         }
     }
 
@@ -147,7 +149,7 @@ class Reader
      */
     private function loadTranslations($locale, $group, $namespace, $file)
     {
-        $translations = array_dot($this->app['translator']->getLoader()->load($locale, $group, $namespace));
+        $translations = Arr::dot($this->app['translator']->getLoader()->load($locale, $group, $namespace));
 
         foreach ($translations as $key => $value) {
 

@@ -3,10 +3,10 @@
 namespace Nikaia\TranslationSheet\Client;
 
 use Google_Service_Sheets;
+use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;
+use Google_Service_Sheets_BatchUpdateValuesRequest;
 use Google_Service_Sheets_Request;
 use Illuminate\Support\Collection;
-use Google_Service_Sheets_BatchUpdateValuesRequest;
-use Google_Service_Sheets_BatchUpdateSpreadsheetRequest;
 
 class Api
 {
@@ -164,10 +164,16 @@ class Api
             ],
         ];
 
-        if (! is_null($tabColor)) {
+        if (!is_null($tabColor)) {
             $properties['tabColor'] = $this->fractalColors($tabColor);
         }
 
+        return new Google_Service_Sheets_Request(['addSheet' => ['properties' => $properties]]);
+    }
+
+    public function addBlankSheet($title = null)
+    {
+        $properties = $title ? ['title' => $title] : [];
         return new Google_Service_Sheets_Request(['addSheet' => ['properties' => $properties]]);
     }
 
@@ -249,6 +255,11 @@ class Api
         return $service->spreadsheets->get($this->spreadsheetId)->getSheets();
     }
 
+    public function firstSheetId()
+    {
+        return data_get(collect($this->getSheets())->first(), 'properties.sheetId');
+    }
+
     public function getSheetProtectedRanges($sheetId, $description = null)
     {
         $sheet = $this->getSheet($sheetId);
@@ -302,6 +313,15 @@ class Api
         ]);
     }
 
+    public function deleteSheetRequest($sheetId)
+    {
+        return new Google_Service_Sheets_Request([
+            'deleteSheet' => [
+                'sheetId' => $sheetId,
+            ],
+        ]);
+    }
+
     /**
      * Return Fractal RGB color array with r,g,b between 0 and 1.
      *
@@ -323,4 +343,6 @@ class Api
             'blue' => round($blue / 255, 1),
         ];
     }
+
+
 }

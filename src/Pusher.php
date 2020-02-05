@@ -2,9 +2,11 @@
 
 namespace Nikaia\TranslationSheet;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 use Nikaia\TranslationSheet\Commands\Output;
-use Nikaia\TranslationSheet\Translation\Reader;
 use Nikaia\TranslationSheet\Sheet\TranslationsSheet;
+use Nikaia\TranslationSheet\Translation\Reader;
 use Nikaia\TranslationSheet\Translation\Transformer;
 
 class Pusher
@@ -51,8 +53,15 @@ class Pusher
 
     public function getScannedAndTransformedTranslations()
     {
+        $excludePatterns = config('translation_sheet.exclude');
+
         return $this->transformer
             ->setLocales($this->translationsSheet->getSpreadsheet()->getLocales())
-            ->transform($this->reader->scan());
+            ->transform($this->reader->scan())
+            ->when(is_array($excludePatterns) && !empty($excludePatterns), function (Collection $collection) use ($excludePatterns) {
+                return $collection->reject(function ($item) use ($excludePatterns) {
+                    return Str::is($excludePatterns, $item[0] /* full key */);
+                });
+            });
     }
 }
