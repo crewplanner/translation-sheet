@@ -4,8 +4,9 @@ namespace Nikaia\TranslationSheet\Translation;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use Nikaia\TranslationSheet\Sheet\TranslationsSheet;
 
 class Reader
 {
@@ -33,6 +34,11 @@ class Reader
     private $locale;
 
     /**
+     * @var TranslationsSheet
+     */
+    protected $translationSheet;
+
+    /**
      * Reader.
      *
      * @param Application $app
@@ -42,6 +48,19 @@ class Reader
     {
         $this->app = $app;
         $this->files = $files;
+    }
+
+    /**
+     * Set the translation sheets for reader.
+     *
+     * @param TranslationsSheet $translationSheet
+     * @return Reader
+     */
+    public function setTranslationsSheet(TranslationsSheet $translationSheet)
+    {
+        $this->translationSheet = $translationSheet;
+
+        return $this;
     }
 
     /**
@@ -66,11 +85,9 @@ class Reader
      */
     public function scan()
     {
-        // Reset
         $this->translations = new Collection;
 
-        // App directory
-        $this->scanDirectory($this->app->make('path.lang'));
+        $this->scanDirectory($this->translationSheet->getPath());
 
         foreach ($this->files->directories(base_path('Modules')) as $module) {
             $module = basename($module);
@@ -97,10 +114,13 @@ class Reader
         foreach ($this->files->directories($path) as $directory) {
             if ($this->isVendorDirectory($directory)) {
                 $this->scanVendorDirectory($directory);
-            }
-            else {
+            } else {
                 $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), null);
             }
+        }
+
+        foreach ($this->files->files($path) as $file) {
+            $this->loadTranslations($file->getBasename('.json'), '*', '*', $file);
         }
     }
 
@@ -128,7 +148,7 @@ class Reader
      */
     private function loadTranslationsInDirectory($directory, $locale, $namespace)
     {
-        if (! $this->requestedLocale($locale)) {
+        if (!$this->requestedLocale($locale)) {
             return;
         }
 
@@ -149,7 +169,11 @@ class Reader
      */
     private function loadTranslations($locale, $group, $namespace, $file)
     {
-        $translations = Arr::dot($this->app['translator']->getLoader()->load($locale, $group, $namespace));
+        if ($this->translationSheet->isExtraSheet()) {
+            $translations = Arr::dot(json_decode(file_get_contents($file), true));
+        } else {
+            $translations = Arr::dot($this->app['translator']->getLoader()->load($locale, $group, $namespace));
+        }
 
         foreach ($translations as $key => $value) {
 
@@ -166,7 +190,7 @@ class Reader
             $entity->group = $group;
             $entity->key = $key;
             $entity->full_key = $this->fullKey($namespace, $group, $key);
-            $entity->value = (string) $value;
+            $entity->value = (string)$value;
             $entity->source_file = $this->sourceFile($file);
 
             $this->translations->push($entity);
@@ -185,8 +209,8 @@ class Reader
     {
         return
             ($namespace ? "$namespace::" : '')
-            .$group.'.'
-            .$key;
+            . $group . '.'
+            . $key;
     }
 
     /**
