@@ -46,7 +46,6 @@ class SheetPusher
 
         $this->output->writeln('    <comment>Scanning languages files</comment>');
         $translations = $this->getScannedAndTransformedTranslations();
-        
 
         $this->output->writeln('    <comment>Preparing spreadsheet for new write operation</comment>');
         $this->translationsSheet->prepareForWrite();

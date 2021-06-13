@@ -5,6 +5,7 @@ namespace Nikaia\TranslationSheet\Translation;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Nikaia\TranslationSheet\Sheet\TranslationsSheet;
 
@@ -97,7 +98,7 @@ class Reader
             }
 
             foreach ($this->files->directories($directory) as $directory) {
-                $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), strtolower($module));
+                $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), Str::kebab($module));
             }
         }
 
