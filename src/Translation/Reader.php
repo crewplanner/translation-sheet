@@ -98,6 +98,7 @@ class Reader
             }
 
             foreach ($this->files->directories($directory) as $directory) {
+                $module = str_replace('PTG', 'Ptg', $module); // Ugh.
                 $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), Str::kebab($module));
             }
         }
