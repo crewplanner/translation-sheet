@@ -98,7 +98,8 @@ class Reader
             }
 
             foreach ($this->files->directories($directory) as $directory) {
-                $module = str_replace('PTG', 'Ptg', $module); // Ugh.
+                $namespace = config('translation_sheet.namespaces.' . $module) ?? Str::kebab($module);
+
                 $this->loadTranslationsInDirectory($directory, $this->getLocaleFromDirectory($directory), Str::kebab($module));
             }
         }
