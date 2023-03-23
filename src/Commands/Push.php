@@ -22,7 +22,7 @@ class Push extends Command
                     ->setTranslationsSheet($translationsSheet)
                     ->withOutput($this->output)
                     ->push();
-                
+
                 $translationsSheet->api()->reset();
             });
         } catch (DirectoryNotFoundException $e) {

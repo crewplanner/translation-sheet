@@ -93,7 +93,7 @@ class Reader
         foreach ($this->files->directories(base_path('Modules')) as $module) {
             $module = basename($module);
 
-            if (!file_exists($directory = base_path('Modules/' . $module . '/resources/lang'))) {
+            if (!file_exists($directory = base_path('Modules/' . $module . '/lang'))) {
                 continue;
             }
 
