@@ -16,7 +16,7 @@ class Util
                 $r = [];
                 foreach ($var as $key => $value) {
                     $r[] = "$indent    "
-                        .($indexed ? '' : self::varExport($key).' => ')
+                        .($indexed ? '' : self::varExport((string)$key).' => ')
                         .self::varExport($value, "$indent    ");
                 }
 
